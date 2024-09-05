@@ -43,7 +43,7 @@ export const Topnav = ({ menuhendlaer, menuset }) => {
           className="w-[30vw] p-1 text-[1.5vw] sm:text-[2.5vw] text-white text-center outline-none border border-white rounded-xl bg-transparent  "
           type="search"
           id="search"
-          placeholder="search anything"
+          placeholder="Search Here" 
         />
         <div className={`${pathname === "/" ? "ml-24" : ""} z-[99]  w-[35vw]  sm:w-[50vw] max-h-[60vh]  bg-slate-200 absolute top-[100%] overflow-auto`}>
           {searches ? (

@@ -15,7 +15,7 @@ function Login() {
     setTimeout(() => {
       setLoading(false);
       navigate('/home'); // Navigate to the desired page after login
-    }, 2000); // Simulating a 2-second delay
+    }, 3000); // Simulating a 2-second delay
   };
 
   return (

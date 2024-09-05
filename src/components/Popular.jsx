@@ -14,7 +14,7 @@ export const Popular = () => {
   const [page, setpage] = useState(1);
   const [hasMore, sethasMore] = useState(true);
 
-  document.title = "THE Big-Show | Popular " + category.toUpperCase();
+  document.title = "THE BIG-SHOW | Popular " + category.toUpperCase();
 
   const GetPopular = async () => {
     try {

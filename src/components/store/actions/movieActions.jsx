@@ -10,7 +10,7 @@ export const asyncloadmovie = (id) => async (dispatch, getState) => {
     const similar = await axios.get(`/movie/${id}/similar`);
     const translations = await axios.get(`/movie/${id}/translations`);
     const videos = await axios.get(`/movie/${id}/videos`);
-    const watchproviders = await axios.get(`/movie/${id}/watch/providers`);
+    const watchproviders = await axios.get(`/movie/${id}/watch/providers`);git
 
     let theultimatedetails = {
       detail: detail.data,

@@ -1,146 +1,212 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { asyncloadperson, removeperson } from "./store/actions/personActions";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import Loading from "./Loading";
-import HorizontalCards from "./templates/HorizontalCards";
-import { Dropdown } from "./templates/Dropdown";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { asyncloadperson, removeperson } from './store/actions/personActions';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import Loading from './Loading';
+import HorizontalCards from './templates/HorizontalCards';
+import { Dropdown } from './templates/Dropdown';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft, Home, Globe,
+  User, Cake, MapPin, Clapperboard, Calendar, BookOpen,
+} from 'lucide-react';
+
+const InfoRow = ({ icon: Icon, label, value }) => {
+  if (!value || value === 'N/A' || value === 'null' || value === null) return null;
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-7 h-7 rounded-lg bg-surface-muted flex items-center justify-center shrink-0 mt-0.5">
+        <Icon className="w-3.5 h-3.5 text-content-tertiary" />
+      </div>
+      <div>
+        <p className="text-2xs font-semibold text-content-disabled uppercase tracking-wider">{label}</p>
+        <p className="text-sm text-content-secondary mt-0.5">{value}</p>
+      </div>
+    </div>
+  );
+};
 
 export const PersonDetails = () => {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
   const { info } = useSelector((state) => state.person);
   const dispatch = useDispatch();
-  const [Category, setCategory] = useState("movie");
+  const [Category, setCategory] = useState('movie');
 
   useEffect(() => {
     dispatch(asyncloadperson(id));
-    return () => {
-      dispatch(removeperson());
-    };
+    return () => { dispatch(removeperson()); };
   }, [id]);
-  return info ? (
-    <div className="w-full overflow-x-hidden bg-slate-600">
-      <nav className="w-full h-[10vh]  text-zinc-100 flex  gap-7 items-center font-semibold px-5 text-1xl  ">
-        <Link
-          onClick={() => navigate(-1)}
-          className="hover:text-[#ffffdd]  hover:bg-lime-500 text-3xl font-semibold mr-2 rounded-full mt-1 duration-300 cursor-pointer text-zinc-400 ri-arrow-left-line"
-        ></Link>
 
-        <Link to={`/`}>
-          <i className="hover:text-yellow-300 duration-200 ri-home-4-line"></i>
+  if (!info) return <Loading />;
+
+  const { detail, externalid, combinedCredits, movieCredits, tvCredits } = info;
+
+  return (
+    <div className="min-h-screen bg-surface-base text-content-primary">
+      {/* Nav */}
+      <nav className="sticky top-0 z-30 flex items-center gap-4 px-6 py-3 bg-surface-base/90 backdrop-blur-md border-b border-surface-border">
+        <button
+          onClick={() => navigate(-1)}
+          className="btn btn-icon btn-ghost"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <span className="font-semibold text-sm text-content-primary">{detail.name}</span>
+        <Link to="/" className="ml-auto btn btn-icon btn-ghost" aria-label="Home">
+          <Home className="w-4 h-4" />
         </Link>
       </nav>
-      {/* part 2  */}
-      <div className="w-full flex sm:block ">
-        {/* part 2 left  */}
-        <div className="w-[25%] sm:w-full pl-[5%] pt-5 flex flex-col items-start text-zinc-300 ">
-          <img
-            className=" w-[70%]  shadow-md rounded "
-            src={`https://image.tmdb.org/t/p/original/${info.detail.profile_path}`}
-            alt=""
-          />
-          <hr className="w-[70%] mt-5 " />
-          {/* external links */}
-          <div className="text-2xl ml-5  text-white flex gap-3">
-            <Link
-              target="_blank"
-               to={`https://www.wikidata.org/wiki/${info.externalid.wikidata_id}`}
-            >
-              <i className="hover:text-yellow-300 duration-200 ri-earth-fill"></i>
-            </Link>
-            <Link
-              target="_blank"
-              to={`https://www.facebook.com/${info.externalid.facebook_id}`}
-            >
-              <i className="hover:text-yellow-300 ri-facebook-circle-fill"></i>
-            </Link>
-            <Link
-              target="_blank"
-              to={`https://www.instagram.com/${info.externalid.instagram_id}`}
-            >
-              <i className="hover:text-yellow-300 ri-instagram-fill"></i>
-            </Link>
-            <Link
-              target="_blank"
-              to={`https://twitter.com/${info.externalid.twitter_id}`}
-            >
-              <i className="hover:text-yellow-300 ri-twitter-x-fill"></i>
-            </Link>
-          </div>
-          <h1 className=" text-3xl font-black mt-3 mb-3  ">Person info</h1>
-          <li className=" text-xl font-semibold   ">Known for </li>
-          <h1 className=" text-xl mb-3 ml-7">
-            {info.detail.known_for_department}
-          </h1>
 
-          <li className=" text-xl font-semibold  ">Gender</li>
-          <h1 className=" text-xl mb-3 ml-7">
-            {info.detail.gender == 2 ? "Male " : "Female"}
-          </h1>
+      <div className="max-w-6xl mx-auto px-6 sm:px-4 py-8">
+        <div className="flex gap-8 sm:flex-col">
+          {/* Left — profile + info */}
+          <motion.aside
+            className="w-64 sm:w-full shrink-0"
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            {/* Profile picture */}
+            <div className="rounded-2xl overflow-hidden shadow-card-lg border border-surface-border mb-5 aspect-[2/3]">
+              <img
+                className="w-full h-full object-cover"
+                src={`https://image.tmdb.org/t/p/w342/${detail.profile_path}`}
+                alt={detail.name}
+              />
+            </div>
 
-          <li className=" text-xl font-semibold  ">Birthday</li>
-          <h1 className=" text-xl mb-3 ml-7">{info.detail.birthday}</h1>
-
-          <li className=" text-xl font-semibold  ">Deathday</li>
-          <h1 className=" text-xl mb-3 ml-7">
-            {info.detail.deathday ? info.detail.deathday : "Still Alive"}
-          </h1>
-
-          <li className=" text-xl font-semibold  ">Place Of Birth</li>
-          <h1 className=" text-xl w-[80%] mb-3 ml-7">
-            {info.detail.place_of_birth}
-          </h1>
-
-          {info.detail.also_known_as.join(" , ") && (
-            <li className=" text-xl font-semibold ">Also Known As</li>
-          )}
-          <p className=" text-lg w-[80%] mb-3 ml-7 ">
-            {info.detail.also_known_as.join(" , ")}
-          </p>
-        </div>
-        {/* part 3 right information */}
-        <div className="w-[75%] sm:w-full  p-5 text-zinc-200 ">
-          <h1 className=" text-5xl font-black mb-3 ">{info.detail.name}</h1>
-          {info.detail.biography && (
-            <h1 className=" text-2xl font-semibold  ">Biography</h1>
-          )}
-          <p className="text-sm mt-3">{info.detail.biography}</p>
-          <h1 className=" text-lg font-semibold mt-5">Summary</h1>
-          <div>
-            <HorizontalCards data={info.combinedCredits.cast} />
-          </div>
-          <div className="w-full flex justify-between">
-            <h1 className=" text-xl font-semibold  ">Acting</h1>
-            <Dropdown
-              title="Category"
-              options={["tv", "movie"]}
-              func={(e) => setCategory(e.target.value)}
-            />
-          </div>
-          <div className=" rounded-md p-3 list-disc text-zinc-300 w-full h-[50vh] border-2 border-zinc-700 mt-5 overflow-x-hidden overflow-y-auto shadow-xl shadow-[rgba(225,225,225,.3)]">
-            {info[Category + "Credits"].cast.map((c, i) => (
-              <li
-                key={i}
-                className="hover:text-white rounded-md mt-3 hover:bg-black duration-200 p-5 cursor-pointer"
-              >
-                <Link to={`/${Category}/details/${c.id}`}>
-                  <span>
-                    {c.original_title || c.name || c.title || c.original_name}{" "}
-                    <br /> <small className="ml-6">{c.release_date}</small>
-                  </span>
-                  <span className="block mt-3 ml-6">
-                    {c.character && `Character Name : ${c.character}`}
-                  </span>
+            {/* Social links */}
+            <div className="flex items-center gap-3 mb-5">
+              {externalid.wikidata_id && (
+                <Link target="_blank" rel="noopener noreferrer" to={`https://www.wikidata.org/wiki/${externalid.wikidata_id}`} className="btn btn-icon btn-ghost" title="Wikipedia">
+                  <Globe className="w-4 h-4" />
                 </Link>
-              </li>
-            ))}
-          </div>
+              )}
+              {externalid.facebook_id && (
+                <Link target="_blank" rel="noopener noreferrer" to={`https://www.facebook.com/${externalid.facebook_id}`} className="btn btn-icon btn-ghost text-blue-400" title="Facebook">
+                  <Globe className="w-4 h-4" />
+                </Link>
+              )}
+              {externalid.instagram_id && (
+                <Link target="_blank" rel="noopener noreferrer" to={`https://www.instagram.com/${externalid.instagram_id}`} className="btn btn-icon btn-ghost text-pink-400" title="Instagram">
+                  <i className="ri-instagram-fill text-base" />
+                </Link>
+              )}
+              {externalid.twitter_id && (
+                <Link target="_blank" rel="noopener noreferrer" to={`https://twitter.com/${externalid.twitter_id}`} className="btn btn-icon btn-ghost text-sky-400" title="Twitter / X">
+                  <i className="ri-twitter-x-fill text-base" />
+                </Link>
+              )}
+            </div>
+
+            {/* Personal info */}
+            <div className="card p-4 space-y-4">
+              <h3 className="text-xs font-bold text-content-disabled uppercase tracking-widest">
+                Personal Info
+              </h3>
+              <InfoRow icon={Clapperboard} label="Known For"     value={detail.known_for_department} />
+              <InfoRow icon={User}         label="Gender"        value={detail.gender === 2 ? 'Male' : detail.gender === 1 ? 'Female' : 'Other'} />
+              <InfoRow icon={Cake}         label="Birthday"      value={detail.birthday} />
+              <InfoRow icon={Calendar}     label="Day of Death"  value={detail.deathday ?? 'Still Alive'} />
+              <InfoRow icon={MapPin}       label="Place of Birth" value={detail.place_of_birth} />
+              {detail.also_known_as?.length > 0 && (
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-surface-muted flex items-center justify-center shrink-0 mt-0.5">
+                    <User className="w-3.5 h-3.5 text-content-tertiary" />
+                  </div>
+                  <div>
+                    <p className="text-2xs font-semibold text-content-disabled uppercase tracking-wider">Also Known As</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {detail.also_known_as.map((aka, i) => (
+                        <span key={i} className="badge bg-surface-muted text-content-tertiary border-surface-border text-2xs">
+                          {aka}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.aside>
+
+          {/* Right — biography + credits */}
+          <motion.main
+            className="flex-1 min-w-0"
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <h1 className="text-4xl sm:text-3xl font-black text-white mb-6 tracking-tight">
+              {detail.name}
+            </h1>
+
+            {/* Biography */}
+            {detail.biography && (
+              <section className="mb-8">
+                <h2 className="flex items-center gap-2 section-title mb-3">
+                  <BookOpen className="w-4 h-4 text-brand-400" />
+                  Biography
+                </h2>
+                <p className="text-sm text-content-secondary leading-relaxed">
+                  {detail.biography}
+                </p>
+              </section>
+            )}
+
+            {/* Known for — horizontal scroll */}
+            {combinedCredits?.cast?.length > 0 && (
+              <section className="mb-8">
+                <h2 className="section-title mb-3">Known For</h2>
+                <HorizontalCards data={combinedCredits.cast.slice(0, 20)} />
+              </section>
+            )}
+
+            {/* Filmography list */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="section-title">Filmography</h2>
+                <Dropdown
+                  title="Category"
+                  options={['movie', 'tv']}
+                  func={(e) => setCategory(e.target.value)}
+                />
+              </div>
+
+              <div className="card divide-y divide-surface-border max-h-[60vh] overflow-y-auto">
+                {info[Category + 'Credits']?.cast?.length > 0 ? (
+                  info[Category + 'Credits'].cast.map((c, i) => (
+                    <Link
+                      key={i}
+                      to={`/${Category}/details/${c.id}`}
+                      className="flex items-start gap-4 p-4 hover:bg-surface-muted transition-colors duration-150 group"
+                    >
+                      <div className="shrink-0 text-xs text-content-disabled w-16 pt-0.5 text-right">
+                        {(c.release_date || c.first_air_date || '').split('-')[0] || '—'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-content-secondary group-hover:text-content-primary transition-colors">
+                          {c.original_title || c.name || c.title || c.original_name}
+                        </p>
+                        {c.character && (
+                          <p className="text-xs text-content-tertiary mt-0.5">
+                            as <span className="italic">{c.character}</span>
+                          </p>
+                        )}
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="p-8 text-center text-sm text-content-tertiary">
+                    No {Category} credits found.
+                  </div>
+                )}
+              </div>
+            </section>
+          </motion.main>
         </div>
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 };

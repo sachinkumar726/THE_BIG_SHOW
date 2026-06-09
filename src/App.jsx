@@ -22,33 +22,32 @@ import Forget from "./components/Authentication/Forget";
 
 function App() {
   return (
-    <div className="bg-[#303030] flex w-full h-screen">
+    <div className="bg-surface-base min-h-screen w-full">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/trending" element={<Trending />} />
         <Route path="/popular" element={<Popular />} />
         <Route path="/movie" element={<Movie />} />
         <Route path="/movie/details/:id" element={<MovieDetails />}>
-          <Route path="/movie/details/:id/trailer" element={<Trailer />} />
-          <Route path="/movie/details/:id/player" element={<Plyer />} />
-          <Route path="/movie/details/:id/playertwo" element={<PlyerTwo />} />
+          <Route path="/movie/details/:id/trailer"   element={<Trailer />}   />
+          <Route path="/movie/details/:id/player"    element={<Plyer />}     />
+          <Route path="/movie/details/:id/playertwo" element={<PlyerTwo />}  />
         </Route>
         <Route path="/tv" element={<Tvshows />} />
         <Route path="/tv/details/:id" element={<TvDetails />}>
           <Route path="/tv/details/:id/trailer" element={<Trailer />} />
-          <Route path="/tv/details/:id/player" element={<Plyer />} />
+          <Route path="/tv/details/:id/player"  element={<Plyer />}   />
         </Route>
-        <Route path="/tv/details/:id/season/:id" element={<TvSeason />} >
+        <Route path="/tv/details/:id/season/:id" element={<TvSeason />}>
           <Route path="/tv/details/:id/season/:id/episode/:id" element={<PlyerThree />} />
         </Route>
         <Route path="/person" element={<People />} />
         <Route path="/person/details/:id" element={<PersonDetails />} />
-      
         <Route path="/MovieProvider" element={<MovieProvider />} />
+        <Route path="/login"    element={<Login />}    />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forget"   element={<Forget />}   />
         <Route path="*" element={<Notpage />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="forget" element={<Forget />} />
       </Routes>
     </div>
   );

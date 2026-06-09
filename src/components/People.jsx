@@ -1,70 +1,62 @@
-import axios from "../utils/axios";
-import React, { useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { useNavigate } from "react-router-dom";
-import Loading from "./Loading";
-import { Topnav } from "./templates/Topnav";
-import { Cards } from "./templates/Cards";
+import React, { useEffect, useState } from 'react';
+import axios from '../utils/axios';
+import { Cards } from './templates/Cards';
+import Loading from './Loading';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { PageLayout } from './templates/PageLayout';
+import { Users } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export const People = () => {
-  const navigate = useNavigate();
-  const [category, setcategory] = useState("popular");
   const [person, setperson] = useState([]);
   const [page, setpage] = useState(1);
   const [hasMore, sethasMore] = useState(true);
 
-  document.title = "THE ULTIMATE | person Shows " + category.toUpperCase();
+  document.title = 'THE BIG SHOW · People';
 
   const GetPerson = async () => {
     try {
-      const { data } = await axios.get(`/person/${category}?page=${page}`);
-
+      const { data } = await axios.get(`/person/popular?page=${page}`);
       if (data.results.length > 0) {
-        setperson((prevState) => [...prevState, ...data.results]);
-        setpage(page + 1);
+        setperson((prev) => [...prev, ...data.results]);
+        setpage((p) => p + 1);
       } else {
         sethasMore(false);
       }
     } catch (error) {
-      console.log("error", error);
-    }
-  };
-
-  const refershHandler = async () => {
-    if (person.length === 0) {
-      GetPerson();
-    } else {
-      setpage(1);
-      setperson([]);
-      GetPerson();
+      console.log('error', error);
     }
   };
 
   useEffect(() => {
-    refershHandler();
-  }, [category]);
+    if (person.length === 0 && hasMore) GetPerson();
+  }, [person, hasMore]);
 
-  return person.length > 0 ? (
-    <div className=" w-screen h-screen bg-[#303030]">
-      <div className=" px-5 w-full flex items-center bg-[#303030] ">
-        <i
-          onClick={() => navigate("/")}
-          className="hover:text-[#ffffdd]  hover:bg-lime-500 text-3xl font-semibold mr-2 rounded-full mt-1 duration-300 cursor-pointer text-zinc-400 ri-arrow-left-line"
-        ></i>
-        <h1 className="text-2xl font-semibold text-zinc-300">People</h1>
-        <Topnav />
-      </div>
-
-      <InfiniteScroll
-        dataLength={person.length}
-        next={GetPerson}
-        hasMore={hasMore}
-        loader={<h1>Loading...</h1>}
-      >
-        <Cards data={person} title="person" />
-      </InfiniteScroll>
-    </div>
-  ) : (
-    <Loading />
+  return (
+    <PageLayout title="People" subtitle="popular personalities" icon={Users}>
+      {person.length === 0 ? (
+        <Loading />
+      ) : (
+        <InfiniteScroll
+          dataLength={person.length}
+          next={GetPerson}
+          hasMore={hasMore}
+          loader={
+            <div className="py-4 flex justify-center">
+              <motion.div
+                animate={{ opacity: [0.4, 1, 0.4] }}
+                transition={{ duration: 1, repeat: Infinity }}
+                className="text-sm text-content-tertiary"
+              >
+                Loading more…
+              </motion.div>
+            </div>
+          }
+          endMessage={<p className="text-center py-6 text-sm text-content-disabled">You've seen it all!</p>}
+        >
+          <Cards data={person} title="person" />
+        </InfiniteScroll>
+      )}
+    </PageLayout>
   );
 };
